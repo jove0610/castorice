@@ -1,7 +1,9 @@
+import { useState } from "react";
 import dayjs from "dayjs";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
+import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
@@ -12,11 +14,49 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import mockData from "./mockData";
-import { formatExpenseItems, currencyFormatter } from "./helpers";
+import AddItemModal from "./AddItemModal";
+import {
+  formatExpenseItems,
+  currencyFormatter,
+  generateId,
+} from "./helpers";
+import { ExpenseItem } from "./types";
+import { useExpenses } from "./hooks";
 
 function Expense() {
-  const formattedExpenses = formatExpenseItems(mockData);
+  const [showAddItemModal, setShowAddItemModal] = useState(false);
+  const [expenses, setExpenses] = useExpenses();
+  const formattedExpenses = formatExpenseItems(expenses);
+
+  const toggleAddItemModal = () => {
+    setShowAddItemModal(prev => !prev)
+  }
+
+  const handleAddItem = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const registeredDate = formData.get('registeredDate') as string;
+    const description = (formData.get('description') as string).trim();
+    const amount = (formData.get('amount') as string).trim();
+
+    if (
+      !registeredDate ||
+      !description ||
+      !amount ||
+      !isNaN(Number(amount))
+    ) {
+      return;
+    };
+    const expense: ExpenseItem = {
+      id: generateId(),
+      registeredDate: dayjs(registeredDate).format('YYYY-MM-DD'),
+      description,
+      amount: Number(amount),
+    }
+    setExpenses(expenses.concat(expense));
+    e.currentTarget.reset();
+    toggleAddItemModal();
+  }
 
   return (
     <Stack gap={3}>
@@ -24,7 +64,11 @@ function Expense() {
         Expense
       </Typography>
 
-      <Stack>
+      <Stack gap={3}>
+        <Button variant='contained' sx={{mr: 'auto'}} onClick={toggleAddItemModal}>
+          Add Expense
+        </Button>
+
         {formattedExpenses.map(({registeredDate, totalAmount, expenses}) => (
           <Accordion key={registeredDate}>
             <AccordionSummary
@@ -72,6 +116,12 @@ function Expense() {
           </Accordion>
         ))}
       </Stack>
+
+      <AddItemModal
+        open={showAddItemModal}
+        onClose={toggleAddItemModal}
+        handleSubmit={handleAddItem}
+      />
     </Stack>
   )
 }
