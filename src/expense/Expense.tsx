@@ -4,6 +4,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
@@ -13,6 +14,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddItemModal from "./AddItemModal";
 import {
@@ -22,14 +24,26 @@ import {
 } from "./helpers";
 import { ExpenseItem } from "./types";
 import { useExpenses } from "./hooks";
+import DelItemModal from "./DelItemModal";
 
 function Expense() {
   const [showAddItemModal, setShowAddItemModal] = useState(false);
+  const [showDelItemModal, setShowDelItemModal] = useState(false);
+  const [expenseToBeDeleted, setExpenseToBeDeleted] = useState('');
   const [expenses, setExpenses] = useExpenses();
   const formattedExpenses = formatExpenseItems(expenses);
 
   const toggleAddItemModal = () => {
     setShowAddItemModal(prev => !prev)
+  }
+
+  const toggleDelItemModal = () => {
+    setShowDelItemModal(prev => !prev)
+  }
+
+  const handleDelIconClick = (id: string) => {
+    setExpenseToBeDeleted(id);
+    toggleDelItemModal();
   }
 
   const handleAddItem = (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,7 +57,7 @@ function Expense() {
       !registeredDate ||
       !description ||
       !amount ||
-      !isNaN(Number(amount))
+      isNaN(Number(amount))
     ) {
       return;
     };
@@ -56,6 +70,11 @@ function Expense() {
     setExpenses(expenses.concat(expense));
     e.currentTarget.reset();
     toggleAddItemModal();
+  }
+
+  const handleDelItem = () => {
+    setExpenses(expenses.filter(({id}) => id !== expenseToBeDeleted));
+    setExpenseToBeDeleted('')
   }
 
   return (
@@ -96,12 +115,18 @@ function Expense() {
                   </TableHead>
 
                   <TableBody>
-                    {expenses.map(({description, amount}) => (
+                    {expenses.map(({id, description, amount}) => (
                       <TableRow
                         key={`${description}-${amount}`}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
                         <TableCell component="th" scope="row">
+                          <IconButton
+                            aria-label="delete-expense"
+                            onClick={() => handleDelIconClick(id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
                           {description}
                         </TableCell>
                         <TableCell align="right">
@@ -121,6 +146,11 @@ function Expense() {
         open={showAddItemModal}
         onClose={toggleAddItemModal}
         handleSubmit={handleAddItem}
+      />
+      <DelItemModal
+        open={showDelItemModal}
+        onClose={toggleDelItemModal}
+        handleSubmit={handleDelItem}
       />
     </Stack>
   )
