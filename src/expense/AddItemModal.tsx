@@ -5,19 +5,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  maxWidth: '80%',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
+import { modalStyle } from './styles';
 
 interface AddItemModalProps {
   open: boolean;
@@ -39,7 +27,7 @@ function AddItemModal(props: AddItemModalProps) {
       aria-labelledby="modal-add-expense"
       aria-describedby="modal-add-expense-form"
     >
-      <Stack sx={style} component='form' onSubmit={handleSubmit}>
+      <Stack sx={modalStyle} component='form' onSubmit={handleSubmit}>
         <Typography variant="h6" component="h2">
           Add Expense
         </Typography>

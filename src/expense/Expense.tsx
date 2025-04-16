@@ -74,7 +74,8 @@ function Expense() {
 
   const handleDelItem = () => {
     setExpenses(expenses.filter(({id}) => id !== expenseToBeDeleted));
-    setExpenseToBeDeleted('')
+    setExpenseToBeDeleted('');
+    toggleDelItemModal();
   }
 
   return (
