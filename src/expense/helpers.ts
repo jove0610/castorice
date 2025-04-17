@@ -17,6 +17,9 @@ export const formatExpenseItems = (data: ExpenseItem[]) => {
       formattedData[index].expenses.push(expense);
     }
   });
+  formattedData.sort((a, b) => (
+    new Date(b.registeredDate).getTime() - new Date(a.registeredDate).getTime()
+  ));
   return formattedData;
 }
 

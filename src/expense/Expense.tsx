@@ -89,58 +89,60 @@ function Expense() {
           Add Expense
         </Button>
 
-        {formattedExpenses.map(({registeredDate, totalAmount, expenses}) => (
-          <Accordion key={registeredDate}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls={`${registeredDate}-content`}
-            >
-              <Stack direction='row' justifyContent='space-between' width='98%'>
-                <Typography>
-                  {dayjs(registeredDate).format('MMM D')}
-                </Typography>
-                <Typography>
-                  {currencyFormatter.format(totalAmount)}
-                </Typography>
-              </Stack>
-            </AccordionSummary>
+        <Stack>
+          {formattedExpenses.map(({registeredDate, totalAmount, expenses}) => (
+            <Accordion key={registeredDate}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls={`${registeredDate}-content`}
+              >
+                <Stack direction='row' justifyContent='space-between' width='98%'>
+                  <Typography>
+                    {dayjs(registeredDate).format('MMM D (ddd)')}
+                  </Typography>
+                  <Typography>
+                    {currencyFormatter.format(totalAmount)}
+                  </Typography>
+                </Stack>
+              </AccordionSummary>
 
-            <AccordionDetails>
-              <TableContainer component={Paper}>
-                <Table aria-label={`${registeredDate}-table`}>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Description</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                    </TableRow>
-                  </TableHead>
-
-                  <TableBody>
-                    {expenses.map(({id, description, amount}) => (
-                      <TableRow
-                        key={`${description}-${amount}`}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                        <TableCell component="th" scope="row">
-                          <IconButton
-                            aria-label="delete-expense"
-                            onClick={() => handleDelIconClick(id)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                          {description}
-                        </TableCell>
-                        <TableCell align="right">
-                          {currencyFormatter.format(amount)}
-                        </TableCell>
+              <AccordionDetails>
+                <TableContainer component={Paper}>
+                  <Table aria-label={`${registeredDate}-table`}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Description</TableCell>
+                        <TableCell align="right">Amount</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                    </TableHead>
+
+                    <TableBody>
+                      {expenses.map(({id, description, amount}) => (
+                        <TableRow
+                          key={`${description}-${amount}`}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell component="th" scope="row">
+                            <IconButton
+                              aria-label="delete-expense"
+                              onClick={() => handleDelIconClick(id)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                            {description}
+                          </TableCell>
+                          <TableCell align="right">
+                            {currencyFormatter.format(amount)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </AccordionDetails>
+            </Accordion>
+          ))}
+        </Stack>
       </Stack>
 
       <AddItemModal
